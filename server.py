@@ -755,16 +755,16 @@ async def update_monitor(
 ) -> Dict[str, Any]:
     """Update an existing Datadog monitor"""
     try:
-        from datadog_api_client.v1.model.monitor import Monitor
+        from datadog_api_client.v1.model.monitor_update_request import MonitorUpdateRequest
         
         app_ctx: AppContext = ctx.request_context.lifespan_context
         
-        # Get existing monitor first
+        # Initialize the API instance
         api_instance = MonitorsApi(app_ctx.api_client)
-        existing = await api_instance.get_monitor(int(monitor_id))
         
-        # Update only provided fields
-        update_data = existing.to_dict()
+        # Build update data with only the fields we want to update
+        update_data = {}
+
         if name:
             update_data["name"] = name
         if query:
@@ -774,8 +774,9 @@ async def update_monitor(
         if options:
             update_data.update(options)
         
-        monitor = Monitor(**update_data)
-        response = await api_instance.update_monitor(int(monitor_id), body=monitor)
+        # Create MonitorUpdateRequest with only the fields being updated
+        update_request = MonitorUpdateRequest(**update_data)
+        response = await api_instance.update_monitor(int(monitor_id), body=update_request)
         
         data = response.to_dict()
         filepath = await _store_data(data, "monitor_updated")
