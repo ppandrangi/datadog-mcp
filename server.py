@@ -81,14 +81,17 @@ async def app_lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
 
 
 def _load_config() -> DatadogConfig:
-    """Load Datadog configuration from environment"""
-    api_key = os.getenv("DATADOG_API_KEY")
-    app_key = os.getenv("DATADOG_APP_KEY")
-    site = os.getenv("DATADOG_SITE", "datadoghq.com")
-    
+    """Load Datadog configuration from environment
+
+    Note: Uses DD_* environment variables as required by the Datadog SDK.
+    """
+    api_key = os.getenv("DD_API_KEY")
+    app_key = os.getenv("DD_APP_KEY")
+    site = os.getenv("DD_SITE", "datadoghq.com")
+
     if not api_key or not app_key:
-        raise ValueError("DATADOG_API_KEY and DATADOG_APP_KEY must be set")
-        
+        raise ValueError("DD_API_KEY and DD_APP_KEY must be set")
+
     return DatadogConfig(api_key=api_key, app_key=app_key, site=site)
 
 
