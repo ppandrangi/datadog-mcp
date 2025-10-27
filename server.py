@@ -515,8 +515,8 @@ async def search_logs(
         
         with app_ctx.api_client as api_client:
             api_instance = LogsApiV2(api_client)
-            response = api_instance.list_logs(body=body)
-            
+            response = await api_instance.list_logs(body=body)
+
         data = response.to_dict()
         filepath = await _store_data(data, "logs")
         
